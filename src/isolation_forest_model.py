@@ -4,7 +4,7 @@ import numpy as np
 def train_isolation_forest(x):
     model = IsolationForest(
         n_estimators=200,
-        contamination=0.55,
+        contamination=0.5,
         random_state=42
     )
 
