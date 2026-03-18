@@ -1,17 +1,14 @@
-git commit -m "feat: complete network anomaly detection system with Streamlit dashboard
+complete network anomaly detection project
 
-- implemented Isolation Forest, Autoencoder, and DBSCAN models
-- added full preprocessing pipeline for NSL-KDD dataset
-- built interactive Streamlit dashboard with:
-  - model selection (IF / AE)
-  - anomaly threshold slider
-  - PCA visualization
-  - anomaly score distribution
-  - attack type insights
-  - false positive analysis
-  - model comparison tab
-- added result visualizations and saved plots
-- included notebooks for experimentation
-- added requirements.txt and project documentation
+- implemented Isolation Forest, DBSCAN, and Autoencoder models
+- added threshold tuning and evaluation metrics (precision, recall, F1)
+- improved Autoencoder performance (F1: 0.89)
+- added PCA visualizations and anomaly score distributions
+- integrated Streamlit dashboard with model selection and comparison
+- updated README with final results and insights
+- finalized project structure and requirements
 
-final version ready for deployment"
+results:
+- Isolation Forest F1: 0.49
+- DBSCAN F1: 0.18
+- Autoencoder F1: 0.89
