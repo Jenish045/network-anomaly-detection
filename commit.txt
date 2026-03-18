@@ -1,0 +1,17 @@
+git commit -m "feat: complete network anomaly detection system with Streamlit dashboard
+
+- implemented Isolation Forest, Autoencoder, and DBSCAN models
+- added full preprocessing pipeline for NSL-KDD dataset
+- built interactive Streamlit dashboard with:
+  - model selection (IF / AE)
+  - anomaly threshold slider
+  - PCA visualization
+  - anomaly score distribution
+  - attack type insights
+  - false positive analysis
+  - model comparison tab
+- added result visualizations and saved plots
+- included notebooks for experimentation
+- added requirements.txt and project documentation
+
+final version ready for deployment"

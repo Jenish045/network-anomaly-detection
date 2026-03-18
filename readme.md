@@ -1,184 +1,228 @@
-# 🚀 Network Anomaly Detection System (NSL-KDD)
+# 🚀 Network Anomaly Detection System (ML + Deep Learning + Streamlit)
 
-A production-ready Machine Learning project for detecting network intrusions using unsupervised learning techniques — built with a complete pipeline from data preprocessing to deployment via Streamlit.
-
----
-
-## 📌 Project Overview
-
-This project focuses on detecting anomalous network traffic (attacks) using:
-
-- Isolation Forest  
-- Autoencoder (Deep Learning)  
-- DBSCAN (for comparison)
-
-The system simulates real-world anomaly detection in cybersecurity using the NSL-KDD dataset.
+## 📌 Overview
+This project detects network anomalies using multiple unsupervised learning techniques on the KDD dataset.  
+It compares traditional methods with deep learning and provides an interactive dashboard using Streamlit.
 
 ---
 
-## 🎯 Key Features
-
-- End-to-end ML pipeline (data → model → evaluation → deployment)
-- Multiple anomaly detection models
-- Interactive Streamlit dashboard
-- Model comparison (Isolation Forest vs Autoencoder)
-- Adjustable anomaly threshold
-- PCA-based visualization
-- Attack type insights
-- False positive analysis
-- Downloadable results
+## 🎯 Objectives
+- Detect anomalous network traffic (attacks vs normal)
+- Compare different unsupervised learning approaches
+- Analyze model performance and limitations
+- Build an interactive visualization dashboard
 
 ---
 
-## 🧠 Models Used
+## 📂 Dataset
+- **KDD Cup Dataset**
+- Contains labeled network traffic (normal vs attack)
+- High-dimensional and complex → challenging for anomaly detection
 
-### 1. Isolation Forest
+---
+
+## ⚙️ Models Implemented
+
+### 🔹 Isolation Forest
 - Tree-based anomaly detection
-- Works well in high-dimensional data
-- Fast and efficient
-
-### 2. Autoencoder
-- Deep learning model trained on normal data
-- Detects anomalies via reconstruction error
-- Best performance in this project
-
-### 3. DBSCAN
-- Density-based clustering
-- Used for comparison
-- Performs poorly on high-dimensional data
+- Assumes anomalies are rare
+- Struggles with overlapping data distributions
 
 ---
 
-## 📊 Model Performance
+### 🔹 DBSCAN
+- Density-based clustering
+- Detects anomalies as low-density points
+- Highly sensitive to parameters (eps, min_samples)
+- Performs poorly in high-dimensional data
 
-- Isolation Forest → Accuracy: ~0.79, F1: ~0.79  
-- DBSCAN → Accuracy: ~0.46, F1: ~0.18  
-- Autoencoder → Accuracy: ~0.86, F1: ~0.86  
+---
+
+### 🔹 Autoencoder (Deep Learning)
+- Neural network-based reconstruction model
+- Trained only on normal data
+- Uses reconstruction error for anomaly detection
+- Captures complex feature relationships
+
+---
+
+## 🧪 Methodology
+
+### Data Preprocessing
+- Encoding categorical features
+- Feature scaling using StandardScaler
+- Train-test split (KDDTrain+ / KDDTest+)
+
+---
+
+### Isolation Forest
+- Generates anomaly scores
+- Threshold tuning using percentiles
+- Limited by overlapping score distributions
+
+---
+
+### DBSCAN
+- Clusters dense regions
+- Labels noise points as anomalies
+- Performance depends heavily on parameter tuning
+
+---
+
+### Autoencoder
+- Trained only on normal data
+- Reconstruction error used for anomaly detection
+- Threshold optimized using F1-score
+
+---
+
+## 📊 Model Performance Comparison
+
+| Model | Precision | Recall | F1-Score | Accuracy | Key Behavior |
+|------|----------|--------|----------|----------|-------------|
+| Isolation Forest (Tuned) | 0.44 | 0.54 | 0.49 | 0.35 | Weak separation due to overlap |
+| DBSCAN | 0.67 | 0.11 | 0.18 | 0.46 | Misses most attacks |
+| Autoencoder (Optimized) | **0.95** | **0.83** | **0.89** | **0.88** | Best overall performance |
+
+---
+
+## 📈 Results & Insights
+
+### Isolation Forest
+- Assumes anomalies are rare → violated in KDD dataset
+- Overlapping distributions reduce effectiveness
+
+### DBSCAN
+- Struggles with high-dimensional data
+- Very low recall (0.11) → fails to detect most attacks
+
+### Autoencoder
+- Learns complex patterns
+- Achieves best balance of precision and recall
+- Significantly reduces false positives
+
+---
+
+## 📊 Visualizations
+- Anomaly score distribution (Isolation Forest)
+- Reconstruction error distribution (Autoencoder)
+- PCA-based anomaly visualization
+- Attack type analysis
+
+---
+
+## 🧠 Key Learnings
+- Model assumptions strongly affect performance
+- Traditional methods struggle with complex datasets
+- Deep learning models capture non-linear patterns effectively
+- Threshold tuning is critical in anomaly detection
+
+---
+
+## 🖥️ Streamlit Dashboard
+
+### Features
+- Select model: Isolation Forest / DBSCAN / Autoencoder
+- Adjust threshold and DBSCAN parameters
+- View real-time anomaly detection
+- Interactive PCA visualization
+- Compare model performance
+
+---
+
+## 🛠️ Tech Stack
+- Python
+- Scikit-learn
+- TensorFlow / Keras
+- Pandas, NumPy
+- Matplotlib, Seaborn
+- Plotly
+- Streamlit
 
 ---
 
 ## 📁 Project Structure
-
-Network-Anomaly-Detection/
+```
+network-anomaly-detection/
 │
 ├── data/
 │   └── raw/
 │       ├── KDDTrain+.txt
 │       └── KDDTest+.txt
 │
-├── src/
-│   ├── preprocessing.py
-│   ├── isolation_forest_model.py
-│   ├── dbscan_model.py
-│   └── autoencoder_model.py
-│
 ├── notebooks/
+│   ├── 01_preprocessing.ipynb
+│   ├── 02_dbscan.ipynb
 │   ├── 03_isolation_forest.ipynb
 │   └── 04_autoencoder.ipynb
 │
-├── results/
+├── src/
+│   ├── preprocessing.py          # data loading, encoding, splitting
+│   ├── isolation_forest_model.py
+│   └── autoencoder_model.py
 │
-├── app.py
+├── results/
+│   ├── anomaly_score_density.png
+│   ├── ae_error.png
+│   ├── ae_pca.png
+│   ├── isolation_forest.png
+│   └── model_comparison.csv
+│
+├── app.py              # main dashboard app
 ├── requirements.txt
 └── README.md
+```
 
 ---
 
-## ⚙️ Installation
+## 🚀 How to Run
 
-1. Clone the repository
-
-git clone https://github.com/jenish045/network-anomaly-detection.git  
-cd network-anomaly-detection  
-
-2. Install dependencies
-
-pip install -r requirements.txt  
+### 1. Clone Repository
+```
+git clone https://github.com/your-username/network-anomaly-detection.git
+cd network-anomaly-detection
+```
 
 ---
 
-## ▶️ Running the App
-
-streamlit run app.py  
-
-Open in browser:  
-http://localhost:8501  
+### 2. Install Dependencies
+```
+pip install -r requirements.txt
+```
 
 ---
 
-## 🖥️ Streamlit Dashboard
-
-### Dashboard
-- Total samples
-- Number of anomalies
-- Classification report
-
-### Visualizations
-- PCA projection
-- Anomaly score distribution
-- Attack type insights
-
-### Model Comparison
-- Isolation Forest vs Autoencoder
-- Accuracy & F1 comparison
-
-### Data
-- Preview dataset
-- Download results
+### 3. Run Streamlit App
+```
+streamlit run streamlit_app.py
+```
 
 ---
 
-## 🎛️ Interactive Controls
-
-- Model selection
-- Threshold slider
-- Upload dataset
-
----
-
-## 📊 Insights
-
-- Isolation Forest performs well but struggles with dense attacks  
-- Autoencoder performs best by learning normal patterns  
-- DBSCAN fails due to high dimensionality  
-- Feature overlap causes false positives  
+### 4. Run Notebooks
+```
+jupyter notebook
+```
 
 ---
 
-## 🚀 Future Improvements
+## 🏁 Conclusion
 
-- Real-time anomaly detection
-- Cloud deployment
-- Advanced deep learning models
+The Autoencoder achieved an F1-score of **0.89**, significantly outperforming:
+- Isolation Forest (**0.49**)
+- DBSCAN (**0.18**)
+
+This demonstrates that deep learning models are more effective for complex, high-dimensional anomaly detection tasks.
+
+---
+
+## 🔮 Future Work
+- Hyperparameter tuning for DBSCAN
+- LSTM-based anomaly detection
+- Real-time deployment
 - Feature engineering improvements
-- Hybrid model approach
 
 ---
 
-## 🛠️ Tech Stack
-
-- Python  
-- Scikit-learn  
-- TensorFlow / Keras  
-- Pandas / NumPy  
-- Plotly  
-- Streamlit  
-
----
-
-## 📌 Dataset
-
-NSL-KDD Dataset  
-Improved version of KDD Cup 1999 for intrusion detection research  
-
----
-
-## 🙌 Author
-
-Jenish Upadhyay  
-
----
-
-## ⭐ Support
-
-If you found this useful, consider giving it a star.
+## 👨‍💻 Author
+Jenish Upadhyay
