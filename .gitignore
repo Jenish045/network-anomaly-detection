@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 *.pyo
+*.py[cod]
 .ipynb_checkpoints/
 
 # Data (too large for git)
@@ -20,19 +21,12 @@ venv/
 .DS_Store
 Thumbs.db
 
-# Jupyter
-*.ipynb_checkpoints/
-
-# Temp / generated CSVs (not results)
+# Temp / generated CSVs
 outputs/predictions/*.csv
 data/exports/*.csv
 
 # Project specific
 commit.txt
-
-# Python cache
-__pycache__/
-*.py[cod]
 
 # Test cache
 .pytest_cache/
