@@ -1,14 +1,6 @@
-complete network anomaly detection project
+ network anomaly detection system
 
-- implemented Isolation Forest, DBSCAN, and Autoencoder models
-- added threshold tuning and evaluation metrics (precision, recall, F1)
-- improved Autoencoder performance (F1: 0.89)
-- added PCA visualizations and anomaly score distributions
-- integrated Streamlit dashboard with model selection and comparison
-- updated README with final results and insights
-- finalized project structure and requirements
-
-results:
-- Isolation Forest F1: 0.49
-- DBSCAN F1: 0.18
-- Autoencoder F1: 0.89
+- implemented Isolation Forest, DBSCAN, Autoencoder
+- optimized Autoencoder (F1: 0.89)
+- added Streamlit dashboard
+- added model comparison and visualizations"
