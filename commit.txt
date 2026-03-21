@@ -1,5 +1,0 @@
-complete network anomaly detection system
-
-Implemented and evaluated Isolation Forest, DBSCAN, and Autoencoder on NSL-KDD dataset.
-Fixed pipeline bugs, optimized thresholds, and built an interactive Streamlit dashboard
-with model comparison, PCA visualization, and real-time anomaly exploration.
