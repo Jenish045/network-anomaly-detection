@@ -1,14 +1,13 @@
 from sklearn.ensemble import IsolationForest
 import numpy as np
 
-def train_isolation_forest(x):
+def train_isolation_forest(X_train):
     model = IsolationForest(
-        n_estimators=200,
-        contamination=0.5,
-        random_state=42
+        contamination=0.5,  
+        random_state=42,
+        n_estimators=100
     )
-
-    model.fit(x)
+    model.fit(X_train)
     return model
 
 def detect_anomalies(model,x):

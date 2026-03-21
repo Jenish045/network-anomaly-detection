@@ -1,7 +1,30 @@
+# Python
 __pycache__/
+*.pyc
+*.pyo
 .ipynb_checkpoints/
-*.csv
-*.pkl
+
+# Data (too large for git)
 data/raw/
 data/processed/
-results
+
+# Environment
+.env
+.venv/
+venv/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+*.ipynb_checkpoints/
+
+# Temp / generated CSVs (not results)
+*.csv
+
+# Project specific
+commit.txt

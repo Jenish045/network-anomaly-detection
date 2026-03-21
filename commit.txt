@@ -1,6 +1,5 @@
- network anomaly detection system
+complete network anomaly detection system
 
-- implemented Isolation Forest, DBSCAN, Autoencoder
-- optimized Autoencoder (F1: 0.89)
-- added Streamlit dashboard
-- added model comparison and visualizations"
+Implemented and evaluated Isolation Forest, DBSCAN, and Autoencoder on NSL-KDD dataset.
+Fixed pipeline bugs, optimized thresholds, and built an interactive Streamlit dashboard
+with model comparison, PCA visualization, and real-time anomaly exploration.
