@@ -1,29 +1,43 @@
 # Enterprise Network Anomaly Detection System
 
-Unsupervised network intrusion detection using Isolation Forest, DBSCAN, and Autoencoders with an interactive Streamlit dashboard.
+An enterprise-grade, unsupervised machine learning platform designed to model normal network transaction boundaries and identify malicious packets as anomalies without relying on signature databases.
+
+![Dashboard Landing Page](assets/dashboard.png)
 
 ---
 
 ## Project Overview
 
-- **Problem Statement**: Modern network environments face frequent and evolving security threats. Traditional signature-based detection systems fail to identify zero-day attacks and novel intrusion strategies.
-- **Objective**: Establish baseline models of normal network transactions using unsupervised machine learning and identify malicious packets as anomalies that deviate from this baseline.
-- **Importance**: Anomaly detection identifies suspicious activities without relying on pre-configured signature databases, catching network threats as soon as they manifest.
-- **Model Selection**: In production networks, malicious traffic labels are rarely available in real-time. Unsupervised models learn the distribution of normal traffic patterns automatically.
+Traditional Network Intrusion Detection Systems (NIDS) rely on pre-configured signature databases, rendering them ineffective against zero-day exploits and novel cyber attacks. 
+
+This project establishes a robust baseline of normal network transactions by training unsupervised machine learning models strictly on normal connection packets. During inference, intrusions are flagged as anomalies that deviate from this normal baseline. In real-world enterprise environments, real-time intrusion labels are rarely available, making unsupervised models essential for out-of-distribution generalization.
 
 ---
 
 ## Features
 
-- **Modular Backend**: Decoupled preprocessing, model definitions, metrics, and visualization utilities located under the src directory.
-- **Interactive Streamlit Dashboard**: Multi-tab interface featuring dataset statistics, model performance comparison profiles, and analytics.
-- **Three complementary anomaly detection models**:
-  - Isolation Forest
-  - DBSCAN
-  - Deep Autoencoder
-- **Interactive Plotly Visualizations**: 2D PCA boundary scatter plots, score distributions, and performance radar charts.
-- **Model Comparison**: Side-by-side performance metrics comparison (precision, recall, F1, accuracy, and inference latencies).
-- **Downloadable Predictions**: Export labeled predictions as CSV files and Markdown reports.
+- **Three Complementary Detectors**: Implements Isolation Forest, DBSCAN, and a Deep Autoencoder to provide diverse security boundary coverages.
+- **Modular Architecture**: Decoupled preprocessing (`src/data/`), model wrappers (`src/models/`), metrics engine (`src/evaluation/`), and visualization layers (`src/visualization/`).
+- **Interactive Visualizations**: High-contrast, responsive Plotly confusion matrices, ROC curves, and reconstruction error histograms.
+- **Static Spec Grid**: Exposes detailed algorithm parameters, latent dimensions, and training times in the UI without model deserialization overhead.
+- **Cached Predictions Export**: Exports labeled prediction CSV logs and Markdown security reports instantly from session state without re-running models.
+
+---
+
+## System Architecture
+
+The NIDS platform processes network traffic through a sequential five-stage pipeline:
+
+```text
+[Raw Network Packets] ➔ [Scaling & Categorical Encoding] ➔ [Unsupervised Machine Learning Models] ➔ [Anomalous Packet Labeling] ➔ [Metric Evaluation & Export]
+```
+
+### Pipeline Overview
+1. **Data Ingestion**: Standardized loading of standard raw text formats from the NSL-KDD dataset.
+2. **Preprocessing**: Fits encoders and standardizers strictly on normal training data splits, serializing parameters to prevent data leakage during inference.
+3. **Inference Engine**: Executes anomaly detection using tree ensembles, density clustering, or deep bottleneck reconstruction.
+4. **Metric Evaluation**: Compiles accuracy, precision, recall, F1 scores, and processing latencies.
+5. **Interactive Interface**: Presents metrics, distribution curves, and interactive CSV download channels.
 
 ---
 
@@ -33,10 +47,10 @@ Unsupervised network intrusion detection using Isolation Forest, DBSCAN, and Aut
 network-anomaly-detection/
 │
 ├── assets/
-│   ├── architecture/
-│   ├── banners/
-│   ├── icons/
-│   └── screenshots/
+│   ├── dashboard.png               # Dashboard landing screenshot
+│   ├── model_comparision.png       # Model comparison screen screenshot
+│   ├── run_detection_ae.png        # Autoencoder detection screenshot
+│   └── run_detection_if.png        # Isolation Forest detection screenshot
 │
 ├── configs/
 │   └── config.py                   # Centralized paths, seeds, and hyperparameters
@@ -69,9 +83,6 @@ network-anomaly-detection/
 │   └── 07_model_comparison.ipynb
 │
 ├── src/
-│   ├── dashboard/
-│   │   ├── components.py           # Reusable UI cards and alerts
-│   │   └── theme.py                # Visual layout configuration
 │   ├── data/
 │   │   ├── dataset.py              # Ingestion utilities
 │   │   └── preprocessing.py        # Scalers and encoders loaders
@@ -82,8 +93,6 @@ network-anomaly-detection/
 │   │   ├── autoencoder.py          # Autoencoder training and error scoring
 │   │   ├── dbscan.py               # DBSCAN clustering wrapper
 │   │   └── isolation_forest.py     # IF train/predict wrappers
-│   ├── utils/
-│   │   └── helpers.py              # Save/load JSON helpers
 │   └── visualization/
 │       ├── pca.py                  # 2D PCA projection coordinates compiler
 │       └── plotly_plots.py         # Standardized interactive figures layer
@@ -98,7 +107,7 @@ network-anomaly-detection/
 
 ## Installation
 
-Verify that Python 3.10+ is installed. Install dependencies using requirements.txt:
+Ensure Python 3.10+ is installed. Clone the repository and install the dependencies from requirements.txt:
 
 ```bash
 pip install -r requirements.txt
@@ -106,77 +115,92 @@ pip install -r requirements.txt
 
 ---
 
-## Running the Project
+## Usage
 
-Launch the Streamlit security dashboard using:
+### Streamlit Application
+Launch the interactive security dashboard locally using:
 
 ```bash
 streamlit run app.py
 ```
 
----
-
-## Project Workflow
-
-```text
-Dataset
-    ↓
-Preprocessing
-    ↓
-Model
-    ↓
-Evaluation
-    ↓
-Visualization
-    ↓
-Dashboard
-```
+### Jupyter Notebooks
+To inspect or retrain the models step-by-step, run the notebooks in order:
+1. `01_dataset_loading.ipynb`: Raw text log validation.
+2. `02_exploratory_data_analysis.ipynb`: Class distributions.
+3. `03_data_preprocessing.ipynb`: StandardScaler fitting.
+4. `04_isolation_forest.ipynb`: Path traversal anomaly isolation.
+5. `05_dbscan.ipynb`: Density-based outlier noise clustering.
+6. `06_autoencoder.ipynb`: Bottleneck reconstruction training.
+7. `07_model_comparison.ipynb`: Combined performance matrix.
 
 ---
 
 ## Models Implemented
 
-- **Isolation Forest**: Isolates anomalies recursively using ensemble trees. Best suited for real-time edge firewalls with constrained memory.
-- **DBSCAN**: Identifies dense regions of normal connection traffic, flagging sparse outliers as noise. Best suited for historical, offline packet investigation.
-- **Autoencoder**: Neural network trained solely on normal network logs to reconstruct input vectors. Intrusions produce high reconstruction MSE. Best suited for enterprise cores prioritizing security recall.
+### 1. Isolation Forest
+Isolates anomalies recursively using tree structures. Outlier profiles are easily partitioned near tree roots, translating to shorter path lengths. This model is extremely lightweight and achieves very low latencies.
+
+![Isolation Forest Inference Workspace](assets/run_detection_if.png)
+
+- **Hyperparameters**: `n_estimators=100`, `contamination=0.50`
+- **Use Case**: Edge nodes and firewalls requiring real-time logging speed.
+
+### 2. DBSCAN
+Groups high-density transactions based on spatial neighborhoods. Outliers that fail to fit dense core clusters are marked as noise (`-1`) and flagged as anomalies.
+- **Hyperparameters**: `eps=3.0`, `min_samples=10`
+- **Use Case**: Offline forensic investigations and cluster labeling.
+
+### 3. Deep Autoencoder
+An unsupervised neural network trained exclusively on normal transactions. The network compresses vectors through a low-dimensional latent bottleneck and reconstructs them at the output. Out-of-distribution attacks fail to reconstruct well, generating high Mean Squared Error (MSE) scores.
+
+![Autoencoder Inference Workspace](assets/run_detection_ae.png)
+
+- **Architecture**: `Input(41) -> Dense(64) -> Dense(32) -> Dense(16) -> Latent(8) -> Dense(16) -> Dense(32) -> Dense(64) -> Output(41)`
+- **Use Case**: Critical core network nodes requiring high anomaly recall.
 
 ---
 
-## Notebook Section
+## Performance Metrics
 
-The Jupyter notebooks in the notebooks directory document the entire analytical pipeline, starting from initial dataset loading and exploratory analysis through preprocessing, individual model evaluation, and final performance comparison.
+All models were evaluated on the unseen `KDDTest+` test set containing 17 novel attack categories absent from training:
 
----
-
-## Dashboard Section
-
-The Streamlit dashboard provides a browser interface to explore model configurations, run inference on the standard test dataset, compare model metrics, and download labeled anomaly CSVs and reports.
-
----
-
-## Performance Summary
-
-Evaluated on the standard KDDTest+ split containing unseen, out-of-distribution network intrusions:
-
-| Model | Precision | Recall | F1-Score | Accuracy | Training Time | Inference Time |
+| Model | Accuracy | Precision | Recall | F1 Score | Training Time | Inference Time |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Isolation Forest** | 0.5300 | 0.5579 | 0.5436 | 0.5550 | **0.154s** | **0.052s** |
-| **DBSCAN** | 0.4305 | 0.6842 | 0.5285 | 0.4214 | 1.241s | N/A |
-| **Autoencoder** | **0.8300** | **0.9769** | **0.8975** | **0.8748** | 7.824s | 0.124s |
+| **Isolation Forest** | 0.7987 | 0.8054 | 0.8525 | 0.8283 | **0.1540s** | **0.0520s** |
+| **DBSCAN** | 0.4662 | 0.3613 | 0.1756 | 0.2363 | 1.2410s | N/A |
+| **Autoencoder** | **0.8789** | **0.8344** | **0.9821** | **0.9022** | 7.8240s | 0.1240s |
+
+![Model Performance Comparison](assets/model_comparision.png)
+
+- **Optimal Autoencoder Threshold**: `0.022829` (MSE)
+- **DBSCAN Noise Rate**: `57.80%` (indicating severe Euclidean distance convergence in 41-dimensional space)
 
 ---
 
-## Technology Stack
+## Deployment
 
-- **Programming Language**: Python
-- **Machine Learning**: Scikit-Learn
-- **Deep Learning**: TensorFlow, Keras
-- **Data Processing**: Pandas, NumPy, Joblib
-- **Dashboard**: Streamlit
-- **Visualization**: Plotly
+The application is fully deployment-ready for **Streamlit Community Cloud**:
+- **Python Version**: `3.10` or higher.
+- **Dependencies**: Outlined completely in `requirements.txt`.
+- **Serialization Compatibility**: Weights are stored in Keras native format (`.keras`) to support seamless loading across Linux/Mac/Windows hosting environments without deserialization warnings.
+
+---
+
+## Future Improvements
+
+- **SHAP Integration**: Expose explainable AI (XAI) feature attributions to provide clarity on flagged anomalies.
+- **Recurrent Autoencoders**: Integrate LSTM layers to capture temporal sequences and sliding-window network actions.
+- **Adaptive Thresholding**: Dynamically adjust reconstruction bounds based on time-series traffic patterns.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## Author
+
+Developed by **Jenish Upadhyay** — [GitHub Profile](https://github.com/Jenish045).
