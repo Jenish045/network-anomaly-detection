@@ -24,7 +24,29 @@ Thumbs.db
 *.ipynb_checkpoints/
 
 # Temp / generated CSVs (not results)
-*.csv
+outputs/predictions/*.csv
+data/exports/*.csv
 
 # Project specific
 commit.txt
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Test cache
+.pytest_cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Streamlit cache
+.streamlit/
+
+# Model checkpoints
+*.h5
+*.keras
+
+# Logs
+*.log

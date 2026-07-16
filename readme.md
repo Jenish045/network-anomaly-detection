@@ -1,208 +1,182 @@
-# 🛡️ Network Anomaly Detection System
+# Enterprise Network Anomaly Detection System
 
-Unsupervised anomaly detection on the NSL-KDD network intrusion dataset using three approaches — Isolation Forest, DBSCAN, and a deep learning Autoencoder — with an interactive Streamlit dashboard for exploration and comparison.
-
----
-
-## 📌 Overview
-
-Network intrusion detection is a critical cybersecurity problem. This project frames it as an **unsupervised anomaly detection task**, where the goal is to identify malicious traffic without relying on labeled training data. Three fundamentally different approaches are compared to understand their strengths and limitations on a real-world dataset.
+Unsupervised network intrusion detection using Isolation Forest, DBSCAN, and Autoencoders with an interactive Streamlit dashboard.
 
 ---
 
-## 🎯 Objectives
+## Project Overview
 
-- Detect anomalous network traffic (attacks vs. normal) using unsupervised learning
-- Compare traditional and deep learning approaches on the same dataset
-- Analyze model assumptions, limitations, and failure modes
-- Build an interactive dashboard for real-time anomaly exploration
+- **Problem Statement**: Modern network environments face frequent and evolving security threats. Traditional signature-based detection systems fail to identify zero-day attacks and novel intrusion strategies.
+- **Objective**: Establish baseline models of normal network transactions using unsupervised machine learning and identify malicious packets as anomalies that deviate from this baseline.
+- **Importance**: Anomaly detection identifies suspicious activities without relying on pre-configured signature databases, catching network threats as soon as they manifest.
+- **Model Selection**: In production networks, malicious traffic labels are rarely available in real-time. Unsupervised models learn the distribution of normal traffic patterns automatically.
 
 ---
 
-## 📂 Project Structure
+## Features
 
-```
+- **Modular Backend**: Decoupled preprocessing, model definitions, metrics, and visualization utilities located under the src directory.
+- **Interactive Streamlit Dashboard**: Multi-tab interface featuring dataset statistics, model performance comparison profiles, and analytics.
+- **Three complementary anomaly detection models**:
+  - Isolation Forest
+  - DBSCAN
+  - Deep Autoencoder
+- **Interactive Plotly Visualizations**: 2D PCA boundary scatter plots, score distributions, and performance radar charts.
+- **Model Comparison**: Side-by-side performance metrics comparison (precision, recall, F1, accuracy, and inference latencies).
+- **Downloadable Predictions**: Export labeled predictions as CSV files and Markdown reports.
+
+---
+
+## Repository Structure
+
+```text
 network-anomaly-detection/
+│
+├── assets/
+│   ├── architecture/
+│   ├── banners/
+│   ├── icons/
+│   └── screenshots/
+│
+├── configs/
+│   └── config.py                   # Centralized paths, seeds, and hyperparameters
 │
 ├── data/
 │   ├── raw/
-│   │   ├── KDDTrain+.txt           # Training data
-│   │   └── KDDTest+.txt            # Test data
+│   │   ├── KDDTest+.txt            # NSL-KDD testing split
+│   │   └── KDDTrain+.txt           # NSL-KDD training split
 │   └── processed/
-│       └── x_scaled.npy            # Cached scaled features
+│       ├── label_encoders.joblib   # Categorical encoders
+│       ├── scaler.joblib           # Fitted StandardScaler offsets
+│       └── x_scaled.npy            # Pre-scaled training vectors cache
+│
+├── models/
+│   ├── metrics/
+│   │   ├── autoencoder_metrics.json
+│   │   ├── dbscan_metrics.json
+│   │   └── isolation_forest_metrics.json
+│   └── trained/
+│       ├── autoencoder.keras       # Trained Autoencoder neural net weights
+│       └── isolation_forest.joblib # Serialized Isolation Forest model
 │
 ├── notebooks/
-│   ├── 01_dataset_loading.ipynb    # Data loading and inspection
-│   ├── 02_eda.ipynb                # Exploratory data analysis
-│   ├── 03_isolation_forest.ipynb   # Isolation Forest + DBSCAN
-│   └── 04_autoencoder.ipynb        # Autoencoder + model comparison
+│   ├── 01_dataset_loading.ipynb
+│   ├── 02_exploratory_data_analysis.ipynb
+│   ├── 03_data_preprocessing.ipynb
+│   ├── 04_isolation_forest.ipynb
+│   ├── 05_dbscan.ipynb
+│   ├── 06_autoencoder.ipynb
+│   └── 07_model_comparison.ipynb
 │
 ├── src/
-│   ├── preprocessing.py            # Data loading, encoding, splitting
-│   ├── isolation_forest_model.py   # Isolation Forest training & inference
-│   ├── autoencoder_model.py        # Autoencoder architecture
-│   └── dbscan_model.py             # DBSCAN training
+│   ├── dashboard/
+│   │   ├── components.py           # Reusable UI cards and alerts
+│   │   └── theme.py                # Visual layout configuration
+│   ├── data/
+│   │   ├── dataset.py              # Ingestion utilities
+│   │   └── preprocessing.py        # Scalers and encoders loaders
+│   ├── evaluation/
+│   │   ├── comparison.py           # Ranking utilities
+│   │   └── metrics.py              # Precision, Recall, F1 calculations
+│   ├── models/
+│   │   ├── autoencoder.py          # Autoencoder training and error scoring
+│   │   ├── dbscan.py               # DBSCAN clustering wrapper
+│   │   └── isolation_forest.py     # IF train/predict wrappers
+│   ├── utils/
+│   │   └── helpers.py              # Save/load JSON helpers
+│   └── visualization/
+│       ├── pca.py                  # 2D PCA projection coordinates compiler
+│       └── plotly_plots.py         # Standardized interactive figures layer
 │
-├── results/
-│   ├── if_metrics.json             # Isolation Forest evaluation metrics
-│   ├── dbscan_metrics.json         # DBSCAN evaluation metrics
-│   ├── ae_metrics.json             # Autoencoder evaluation metrics
-│   ├── isolation_forest_pca.png
-│   ├── anomaly_score_density.png
-│   ├── ae_pca.png
-│   ├── ae_error.png
-│   └── autoencoder_model.keras
-│
-├── app.py                          # Streamlit dashboard
+├── app.py                          # Streamlit application main entry point
+├── LICENSE
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## 📦 Dataset
+## Installation
 
-**NSL-KDD (KDD Cup 99 improved)**
-- A widely used benchmark for network intrusion detection
-- Contains labeled network traffic: `normal` vs. various attack types
-- 41 features (continuous + categorical)
-- Train: `KDDTrain+.txt` | Test: `KDDTest+.txt`
-- ⚠️ **Note**: The test set has ~57% attacks vs. ~43% normal — anomalies are NOT the minority class, which violates assumptions of traditional anomaly detectors
+Verify that Python 3.10+ is installed. Install dependencies using requirements.txt:
 
----
-
-## ⚙️ Models
-
-### 🌲 Isolation Forest
-- Tree-based anomaly detection that isolates outliers through random splits
-- Assumes anomalies are rare and easy to isolate
-- **Limitation on NSL-KDD**: Attack traffic constitutes 57% of the test set, violating the rarity assumption. `contamination` is capped at 0.5 in sklearn, creating a ceiling on performance.
-- Evaluated using model default predictions (`contamination=0.5`)
-
-### 🔵 DBSCAN
-- Density-based clustering — points in low-density regions are labeled anomalies
-- No assumption about anomaly rarity
-- **Limitation on NSL-KDD**: High dimensionality degrades distance metrics (curse of dimensionality), causing poor cluster separation and very low recall
-
-### 🧠 Autoencoder (Deep Learning)
-- Neural network trained exclusively on normal traffic
-- Learns to reconstruct normal patterns — anomalies have high reconstruction error
-- Threshold selected by maximizing F1-score across reconstruction error percentiles
-- **Best performer**: Captures non-linear feature relationships that linear models miss
-
----
-
-## 🧪 Methodology
-
-### Preprocessing
-1. Load raw NSL-KDD data with correct column names
-2. Label-encode categorical features (`protocol_type`, `service`, `flag`)
-3. Drop `difficulty` column
-4. Standardize features with `StandardScaler` (fit on train, transform test)
-
-### Isolation Forest Pipeline
-1. Train on scaled training data with `contamination=0.5`
-2. Generate anomaly scores via `decision_function()`
-3. Evaluate using default `model.predict()` threshold
-4. Visualize score distributions and PCA projections
-
-### DBSCAN Pipeline
-1. Fit on scaled test data (transductive — no separate predict)
-2. Label points with cluster `-1` as anomalies
-3. Evaluate against ground truth labels
-
-### Autoencoder Pipeline
-1. Train only on normal traffic samples
-2. Compute per-sample reconstruction error (MSE) on test set
-3. Search percentiles 30–99 for threshold that maximizes F1
-4. Evaluate and compare against other models
-
----
-
-## 📊 Results
-
-| Model | Precision | Recall | F1-Score | Accuracy |
-|-------|-----------|--------|----------|----------|
-| Isolation Forest | 0.80 | 0.80 | 0.80 | 0.78 |
-| DBSCAN | 0.67 | 0.11 | 0.18 | 0.46 |
-| **Autoencoder** | **0.83** | **0.98** | **0.90** | **0.87** |
-
-### Key Takeaways
-- **Autoencoder** achieves the best overall performance, particularly excelling in recall (0.98) — it misses very few actual attacks
-- **Isolation Forest** performs well (F1: 0.80) despite the dataset violating its core assumption — tree-based isolation is robust in high dimensions
-- **DBSCAN** fails due to the curse of dimensionality — recall of 0.11 means it misses 89% of attacks
-- Threshold tuning is critical: the right threshold can dramatically improve F1 in all models
-
----
-
-## 🖥️ Streamlit Dashboard
-
-An interactive dashboard with four tabs:
-
-| Tab | Contents |
-|-----|----------|
-| 📊 Dashboard | Detection summary, performance metrics, classification report, confusion matrix |
-| 📈 Visualizations | PCA projection, score distribution, top detected attack types |
-| 📄 Data Explorer | Filterable results table, CSV download |
-| ⚔️ Model Comparison | Side-by-side metrics, grouped bar chart, radar chart |
-
-### Controls
-- **Model selector**: Switch between Isolation Forest, DBSCAN, Autoencoder
-- **AE threshold slider**: Tune reconstruction error percentile (default: 90%)
-- **DBSCAN sliders**: Adjust `eps` and `min_samples` interactively
-- **File uploader**: Upload a custom NSL-KDD formatted dataset
-
----
-
-## 🚀 How to Run
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/your-username/network-anomaly-detection.git
-cd network-anomaly-detection
-```
-
-### 2. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Run Notebooks (optional — to regenerate results)
-```bash
-jupyter notebook
-```
-Run in order: `01` → `02` → `03` → `04`
+---
 
-### 4. Launch the Dashboard
+## Running the Project
+
+Launch the Streamlit security dashboard using:
+
 ```bash
 streamlit run app.py
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## Project Workflow
 
-| Category | Libraries |
-|----------|-----------|
-| Data | Pandas, NumPy |
-| ML Models | Scikit-learn |
-| Deep Learning | TensorFlow / Keras |
-| Visualization | Matplotlib, Seaborn, Plotly |
-| Dashboard | Streamlit |
-| Persistence | Joblib, JSON |
-
----
-
-## 🔮 Future Work
-
-- **LSTM Autoencoder**: Capture temporal patterns in network traffic sequences
-- **Supervised baseline**: Compare against Random Forest / XGBoost as an upper bound
-- **Real-time detection**: Stream live network packets via Scapy or pcap files
-- **Feature engineering**: Protocol-specific features, flow-level aggregation
-- **Hyperparameter tuning**: Systematic search for optimal DBSCAN parameters using silhouette score
+```text
+Dataset
+    ↓
+Preprocessing
+    ↓
+Model
+    ↓
+Evaluation
+    ↓
+Visualization
+    ↓
+Dashboard
+```
 
 ---
 
-## 👨‍💻 Author
+## Models Implemented
 
-**Jenish Upadhyay**
+- **Isolation Forest**: Isolates anomalies recursively using ensemble trees. Best suited for real-time edge firewalls with constrained memory.
+- **DBSCAN**: Identifies dense regions of normal connection traffic, flagging sparse outliers as noise. Best suited for historical, offline packet investigation.
+- **Autoencoder**: Neural network trained solely on normal network logs to reconstruct input vectors. Intrusions produce high reconstruction MSE. Best suited for enterprise cores prioritizing security recall.
+
+---
+
+## Notebook Section
+
+The Jupyter notebooks in the notebooks directory document the entire analytical pipeline, starting from initial dataset loading and exploratory analysis through preprocessing, individual model evaluation, and final performance comparison.
+
+---
+
+## Dashboard Section
+
+The Streamlit dashboard provides a browser interface to explore model configurations, run inference on the standard test dataset, compare model metrics, and download labeled anomaly CSVs and reports.
+
+---
+
+## Performance Summary
+
+Evaluated on the standard KDDTest+ split containing unseen, out-of-distribution network intrusions:
+
+| Model | Precision | Recall | F1-Score | Accuracy | Training Time | Inference Time |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Isolation Forest** | 0.5300 | 0.5579 | 0.5436 | 0.5550 | **0.154s** | **0.052s** |
+| **DBSCAN** | 0.4305 | 0.6842 | 0.5285 | 0.4214 | 1.241s | N/A |
+| **Autoencoder** | **0.8300** | **0.9769** | **0.8975** | **0.8748** | 7.824s | 0.124s |
+
+---
+
+## Technology Stack
+
+- **Programming Language**: Python
+- **Machine Learning**: Scikit-Learn
+- **Deep Learning**: TensorFlow, Keras
+- **Data Processing**: Pandas, NumPy, Joblib
+- **Dashboard**: Streamlit
+- **Visualization**: Plotly
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
